@@ -3,21 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <title>Forever & Always 💍</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
 
 <style>
     /* ================= CORE STYLES ================= */
+    :root {
+        --primary-gold: #ffd700;
+        --primary-pink: #ff4da6;
+    }
+
     body {
         margin: 0;
-        overflow: hidden;
+        overflow: hidden; /* Prevents scrolling */
         font-family: 'Poppins', sans-serif;
         background: radial-gradient(circle at 30% 20%, #2b001a, #000000 70%);
         text-align: center;
         color: white;
-        height: 100vh;
+        height: 100vh; /* Fallback */
+        height: 100dvh; /* Mobile browser fix */
         width: 100vw;
         position: relative;
+        touch-action: manipulation; /* Improves touch response */
+        user-select: none; /* Prevents highlighting text on tap */
+        -webkit-tap-highlight-color: transparent;
     }
 
     /* ================= BACKGROUND EFFECTS ================= */
@@ -39,16 +48,6 @@
         100% { transform: translateX(50%) rotate(360deg); }
     }
 
-    @keyframes pulse {
-        0% { background: radial-gradient(circle at 30% 20%, #2b001a, #000000 70%); }
-        50% { background: radial-gradient(circle at 30% 20%, #3b002a, #111111 70%); }
-        100% { background: radial-gradient(circle at 30% 20%, #2b001a, #000000 70%); }
-    }
-
-    body:hover {
-        animation: pulse 3s ease-in-out infinite;
-    }
-
     /* ================= UI LAYOUT ================= */
     #ui-container {
         position: relative;
@@ -59,90 +58,96 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-    }
-
-    .main-content-wrapper {
-        margin-top: -50px;
+        padding: 20px;
+        box-sizing: border-box;
     }
 
     h1 {
         font-family: 'Playfair Display', serif;
-        font-size: 42px;
-        background: linear-gradient(45deg, gold, #ff4da6);
-        
-        /* --- FIXED SECTION BELOW --- */
-        background-clip: text;          /* Standard property */
-        -webkit-background-clip: text;  /* Vendor prefix for Safari/Chrome */
+        font-size: clamp(32px, 6vw, 48px); /* Responsive Text */
+        background: linear-gradient(45deg, var(--primary-gold), var(--primary-pink));
+        background-clip: text;
+        -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        color: transparent;             /* Fallback for standard browsers */
-        /* --------------------------- */
-
-        animation: fadeIn 2s ease-in-out;
-        margin-bottom: 20px;
+        color: transparent;
+        margin-bottom: 15px;
+        line-height: 1.2;
     }
 
     p {
-        font-size: 20px;
-        padding: 0 15px;
+        font-size: clamp(16px, 4vw, 20px);
+        padding: 0 10px;
         opacity: 0.9;
-        min-height: 60px;
+        min-height: 50px;
+        max-width: 600px;
     }
 
     /* ================= BUTTONS ================= */
+    .btn-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
     button {
-        padding: 15px 35px;
-        font-size: 20px;
+        padding: 15px 30px;
+        font-size: 18px;
         border-radius: 50px;
         border: none;
         cursor: pointer;
-        margin: 20px;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         position: relative;
-        overflow: hidden;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
-    }
-
-    button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transition: left 0.5s;
-    }
-
-    button:hover::before {
-        left: 100%;
-    }
-
-    button:active {
-        transform: scale(1.1);
-        box-shadow: 0 0 30px rgba(255,215,0,0.5);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
 
     .yes {
-        background: linear-gradient(45deg, gold, #ff4da6);
+        background: linear-gradient(45deg, var(--primary-gold), var(--primary-pink));
         color: black;
-        font-weight: bold;
-        box-shadow: 0 0 20px gold;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        z-index: 10;
     }
 
-    .yes:hover {
-        box-shadow: 0 0 40px gold;
+    .yes:active {
+        transform: scale(0.95);
     }
 
     .no {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.1);
         color: pink;
         border: 1px solid rgba(255,215,0,0.3);
+        z-index: 10;
+        transition: top 0.1s, left 0.1s; /* Faster movement on mobile */
     }
 
-    .no:hover {
-        background: rgba(255,105,180,0.2);
+    /* ================= TOAST NOTIFICATION ================= */
+    #toast {
+        visibility: hidden;
+        min-width: 250px;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #333;
+        text-align: center;
+        border-radius: 50px;
+        padding: 16px;
+        position: fixed;
+        z-index: 100;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+        font-size: 14px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        opacity: 0;
+        transition: opacity 0.3s, bottom 0.3s;
+    }
+
+    #toast.show {
+        visibility: visible;
+        opacity: 1;
+        bottom: 50px;
     }
 
     /* ================= ANIMATIONS ================= */
@@ -152,106 +157,74 @@
         animation: float 6s linear infinite;
         z-index: 1;
         opacity: 0.8;
-        filter: drop-shadow(0 0 5px gold);
         pointer-events: none;
     }
 
     @keyframes float {
-        0% { transform: translateY(100vh) rotate(0deg) scale(1); opacity: 0; }
+        0% { transform: translateY(110vh) scale(1); opacity: 0; }
         10% { opacity: 0.8; }
-        90% { opacity: 0.8; }
-        100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        100% { transform: translateY(-10vh) scale(1.5) rotate(360deg); opacity: 0; }
     }
 </style>
 </head>
 <body>
 
-<!-- AUDIO FILES: Ensure these exist in a 'static' folder -->
-<audio id="bgMusic" autoplay loop preload="auto">
-    <source src="static/music.mp3" type="audio/mpeg">
-</audio>
-<audio id="clickSound" preload="auto">
-    <source src="static/click.mp3" type="audio/mpeg">
-</audio>
-<audio id="yesSound" preload="auto">
-    <source src="static/yes.mp3" type="audio/mpeg">
-</audio>
+<audio id="bgMusic" loop preload="auto"><source src="static/music.mp3" type="audio/mpeg"></audio>
+<audio id="clickSound" preload="auto"><source src="static/click.mp3" type="audio/mpeg"></audio>
+<audio id="yesSound" preload="auto"><source src="static/yes.mp3" type="audio/mpeg"></audio>
 
 <div id="ui-container">
     
-    <!-- Loading Screen -->
     <div id="loadingScreen" style="text-align: center; z-index: 10;">
-        <h1 style="color: gold; font-family: 'Playfair Display', serif;">Preparing something special...</h1>
-        <div style="width: 200px; height: 4px; background: rgba(255,255,255,0.2); margin: 20px auto; border-radius: 2px;">
+        <h1 style="color: gold;">Preparing something special...</h1>
+        <div style="width: 80%; max-width: 300px; height: 4px; background: rgba(255,255,255,0.2); margin: 20px auto; border-radius: 2px;">
             <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(45deg, gold, #ff4da6); border-radius: 2px; transition: width 3s ease;"></div>
         </div>
+        <p style="font-size: 12px; margin-top: 10px; color: #aaa;">(Tap anywhere if music doesn't start)</p>
     </div>
 
-    <!-- Main Content -->
     <div id="mainContent" class="main-content-wrapper" style="opacity: 0; display: none; transition: opacity 1s;">
         <h1>Hey You Girl ❤️</h1>
         <p id="loveText"></p>
-        <div>
-            <button class="yes" onclick="yesClicked()" id="yesBtn" aria-label="Say Yes">YES 💖</button>
-            <button class="no" onclick="moveNo(this)" id="noBtn" aria-label="Say No">NO 😜</button>
+        <div class="btn-container">
+            <button class="yes" onclick="yesClicked()" id="yesBtn">YES 💖</button>
+            <button class="no" id="noBtn">NO 😜</button>
         </div>
     </div>
 
 </div>
 
+<div id="toast"></div>
+
 <script>
 /* ================= CONFIGURATION ================= */
 const noComments = [
     "Nice try 😜", "Still no? 🤨", "You sure? 😏", "Think again 💭", "Come onnn 🥺",
-    "Don't run 😆", "Caught you 😎", "Hehe nope 😂", "Still hiding? 👀", "You can't escape 😈",
-    "Try harder 💪", "Almost there 😅", "Nope again 😜", "Really? 🤔", "I see you 😏",
-    "Click YES 😌", "Stop running 🏃‍♀️", "Why so shy? 😊", "Be honest 😇", "You love me 😘",
-    "Not fair 😝", "Haha missed 😆", "Too slow 🐢", "Faster! ⚡", "Still trying? 😏",
-    "No again? 🤭", "Think twice 💕", "Admit it 😌", "Say yes already 😍", "Running again? 😂",
-    "I won't stop 😜", "You blush 😳", "It's destiny 💫", "Stop teasing 😏", "Come here 😁",
-    "Still playing? 🎮", "Haha 😆", "No no no 😜", "You clicked it 😏", "Give up? 😌",
-    "Nice tap 📱", "Android fast? 🤳", "Missed me 😆", "Tap tap 😂", "Why run? 😜",
-    "You can't win 😈", "Still saying no? 🤨", "Hmm suspicious 🤔", "Think carefully 💭", "Almost yes 😏",
-    "Be brave 😌", "Click YES 💖", "Not again 😆", "Still shy? 😊", "Stop moving 😜",
-    "I see that 👀", "You smiling 😁", "Haha try more 😂", "Close one 😅", "Try again 💪",
-    "Still resisting? 😏", "Nope nope 😜", "Tap faster ⚡", "Too cute 😍", "You love this 😆",
-    "Say it 😌", "Almost yes 💕", "No again 😂", "Persistent huh 😏", "Caught clicking 😜",
-    "Again?? 😆", "Still tapping 📱", "Why no? 😅", "Stop teasing 😈", "You can't escape 💘",
-    "Getting tired? 😜", "Still here 😏", "Haha cute 😂", "One more try 😌", "No works? 😆",
-    "Keep trying 💪", "Tap tap tap 📱", "Almost mine 💍", "Say YES 💖", "Not allowed 😜",
-    "You trying hard 😏", "Click YES now 😌", "Still no? 😂", "No means yes 😜", "Last chance 😆",
-    "Okay okay 😏", "Still resisting 💕", "Hehe 😜", "You're adorable 😍", "Just say YES 😌"
+    "Don't run 😆", "Caught you 😎", "Hehe nope 😂", "Too slow 🐢", "Click YES 😌"
 ];
 
 let noClickCount = 0;
 let musicPlayed = false;
 const loveMessage = "From the moment I met you, my world became brighter ✨ You are my happiness, my peace, my forever 💕";
 
-/* ================= MUSIC AUTOPLAY LOGIC ================= */
-window.addEventListener('load', function() {
-    const audio = document.getElementById('bgMusic');
-    const playPromise = audio.play();
-
-    if (playPromise !== undefined) {
-        playPromise.then(_ => {
+/* ================= MOBILE AUDIO HANDLING ================= */
+// Android blocks autoplay. We unlock audio on the first interaction (Touch/Click)
+function unlockAudio() {
+    if (!musicPlayed) {
+        const bgMusic = document.getElementById('bgMusic');
+        bgMusic.play().then(() => {
             musicPlayed = true;
-            console.log("Autoplay successful");
-        }).catch(error => {
-            console.log("Autoplay blocked. Waiting for click.");
-            document.body.addEventListener('click', function() {
-                if(!musicPlayed) {
-                    audio.play();
-                    musicPlayed = true;
-                }
-            }, { once: true });
-        });
+            console.log("Audio unlocked");
+        }).catch(e => console.log("Waiting for interaction..."));
+        
+        // Also prime the effects so they don't lag later
+        document.getElementById('clickSound').load();
+        document.getElementById('yesSound').load();
     }
-});
+}
+
+document.body.addEventListener('click', unlockAudio, { once: true });
+document.body.addEventListener('touchstart', unlockAudio, { once: true });
 
 function playAudio(id) {
     const audio = document.getElementById(id);
@@ -261,18 +234,13 @@ function playAudio(id) {
     }
 }
 
-function ensureMusic() {
-    if (!musicPlayed) {
-        playAudio('bgMusic');
-        musicPlayed = true;
-    }
-}
-
 /* ================= LOADING & TYPING ================= */
-setTimeout(() => {
-    document.getElementById('progressBar').style.width = '70%';
-    setTimeout(startTypewriter, 1000);
-}, 1000);
+window.onload = function() {
+    setTimeout(() => {
+        document.getElementById('progressBar').style.width = '70%';
+        setTimeout(startTypewriter, 1000);
+    }, 500);
+};
 
 function startTypewriter() {
     const textElem = document.getElementById("loveText");
@@ -291,107 +259,104 @@ function startTypewriter() {
 }
 
 function finishLoading() {
-    const progressBar = document.getElementById('progressBar');
-    const loadingScreen = document.getElementById('loadingScreen');
-    const mainContent = document.getElementById('mainContent');
-    
+    document.getElementById('progressBar').style.width = '100%';
     setTimeout(() => {
-        progressBar.style.width = '100%';
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-            mainContent.style.display = 'block';
-            setTimeout(() => {
-                mainContent.style.opacity = '1';
-            }, 50);
-        }, 500);
+        document.getElementById('loadingScreen').style.display = 'none';
+        const main = document.getElementById('mainContent');
+        main.style.display = 'block';
+        setTimeout(() => main.style.opacity = '1', 50);
     }, 500);
 }
 
-/* ================= INTERACTION ================= */
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'y' || event.key === 'Y') {
-        const yesBtn = document.getElementById('yesBtn');
-        if (yesBtn && yesBtn.offsetParent !== null) yesClicked();
-    } else if (event.key === 'n' || event.key === 'N') {
-        const noBtn = document.getElementById('noBtn');
-        if (noBtn && noBtn.offsetParent !== null) moveNo(noBtn);
-    }
-});
+/* ================= NO BUTTON LOGIC (MOBILE OPTIMIZED) ================= */
+const noBtn = document.getElementById('noBtn');
 
-function moveNo(btn) {
-    playAudio('clickSound');
-    ensureMusic();
-    
-    if (navigator.vibrate) {
-        let level = Math.min(noClickCount + 1, 10);
-        navigator.vibrate([level * 50, 40, level * 50]);
-    }
-
-    if (noClickCount < noComments.length) {
-        alert(noComments[noClickCount]);
-    } else {
-        alert("You really love clicking NO 😜");
-    }
-    noClickCount++;
-
-    btn.style.position = "fixed";
-    const padding = 20;
-    const maxX = window.innerWidth - btn.offsetWidth - padding;
-    const maxY = window.innerHeight - btn.offsetHeight - padding;
-    
-    btn.style.left = Math.max(padding, Math.random() * maxX) + "px";
-    btn.style.top = Math.max(padding, Math.random() * maxY) + "px";
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.className = "show";
+    setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2000);
 }
 
-function yesClicked() {
+function moveNoButton(e) {
+    // Prevent default touch actions (scrolling/zooming) on the button
+    if(e && e.cancelable) e.preventDefault(); 
+    
     playAudio('clickSound');
-    playAudio('yesSound');
-    ensureMusic();
+    if (navigator.vibrate) navigator.vibrate(50); // Short vibration
 
-    if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200, 100, 400]);
-    }
+    // Get random comment
+    const comment = noComments[noClickCount % noComments.length];
+    showToast(comment);
+    noClickCount++;
+
+    // Calculate safe boundaries
+    const padding = 20;
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const maxX = window.innerWidth - btnWidth - padding;
+    const maxY = window.innerHeight - btnHeight - padding;
+
+    const randomX = Math.max(padding, Math.random() * maxX);
+    const randomY = Math.max(padding, Math.random() * maxY);
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = randomX + "px";
+    noBtn.style.top = randomY + "px";
+}
+
+// Trigger on BOTH touchstart (mobile) and mouseover (desktop)
+noBtn.addEventListener('touchstart', moveNoButton, { passive: false });
+noBtn.addEventListener('mouseover', moveNoButton);
+noBtn.addEventListener('click', moveNoButton); // Fallback
+
+/* ================= YES BUTTON LOGIC ================= */
+function yesClicked() {
+    playAudio('yesSound');
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
     const uiContainer = document.getElementById('ui-container');
     uiContainer.innerHTML = `
         <h1 style='color:gold; font-family:Playfair Display;'>She Said YES 💍💖</h1>
-        <h2 style='color:pink;'>You Are Mine Forever 🥰</h2>
+        <h2 style='color:pink; font-size: 20px;'>You Are Mine Forever 🥰</h2>
     `;
 
     launchConfetti();
-    setTimeout(startGame, 1500);
+    setTimeout(startGame, 2000);
 }
 
-/* ================= EFFECTS ================= */
+/* ================= BACKGROUND HEARTS ================= */
 function createHeart() {
     const heart = document.createElement("div");
     heart.classList.add("heart");
     heart.innerHTML = "❤️";
     heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 20 + "px";
-    heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+    heart.style.fontSize = Math.random() * 15 + 10 + "px"; // Smaller hearts for mobile
+    heart.style.animationDuration = Math.random() * 3 + 4 + "s";
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 6000);
 }
-setInterval(createHeart, 300);
+setInterval(createHeart, 400);
 
+/* ================= CONFETTI CANVAS ================= */
 function launchConfetti() {
     const canvas = document.createElement("canvas");
-    canvas.style.position = "fixed";
-    canvas.style.top = "0";
-    canvas.style.left = "0";
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.pointerEvents = "none";
-    canvas.style.zIndex = "5";
+    Object.assign(canvas.style, {
+        position: "fixed", top: "0", left: "0", 
+        width: "100%", height: "100%", 
+        pointerEvents: "none", zIndex: "5"
+    });
     document.body.appendChild(canvas);
 
     const ctx = canvas.getContext("2d");
-    const pieces = Array.from({length: 250}, () => ({
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = Array.from({length: 150}, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height - canvas.height,
-        size: Math.random() * 8 + 4,
-        speed: Math.random() * 4 + 2,
+        size: Math.random() * 5 + 2,
+        speed: Math.random() * 3 + 2,
         color: `hsl(${Math.random() * 360}, 100%, 50%)`
     }));
 
@@ -404,38 +369,42 @@ function launchConfetti() {
         });
         if (document.body.contains(canvas)) requestAnimationFrame(update);
     }
-
     update();
     setTimeout(() => canvas.remove(), 5000);
 }
 
-/* ================= GAME ================= */
+/* ================= MINI GAME ================= */
 function startGame() {
     const container = document.getElementById('ui-container');
+    container.innerHTML = ""; // Clear previous text
     
     const gameTitle = document.createElement("h2");
-    gameTitle.innerText = "Catch My Heart 💘 - You have 10 seconds!";
+    gameTitle.innerText = "Catch My Heart 💘";
     gameTitle.style.color = "gold";
     container.appendChild(gameTitle);
 
     const timerDisplay = document.createElement("div");
     timerDisplay.style.color = "pink";
-    timerDisplay.style.fontSize = "24px";
-    timerDisplay.style.margin = "10px";
+    timerDisplay.style.fontSize = "20px";
     timerDisplay.innerText = "Time: 10s";
     container.appendChild(timerDisplay);
 
     const heartBtn = document.createElement("button");
     heartBtn.innerHTML = "💖";
-    heartBtn.style.position = "fixed";
-    heartBtn.style.fontSize = "30px";
-    heartBtn.style.padding = "15px";
-    heartBtn.style.borderRadius = "50%";
-    heartBtn.style.border = "none";
-    heartBtn.style.cursor = "pointer";
-    heartBtn.style.background = "linear-gradient(45deg,gold,#ff4da6)";
-    heartBtn.style.boxShadow = "0 0 20px gold";
-    heartBtn.style.zIndex = "100";
+    Object.assign(heartBtn.style, {
+        position: "fixed", fontSize: "30px", padding: "15px",
+        borderRadius: "50%", border: "none", background: "gold",
+        boxShadow: "0 0 20px gold", zIndex: "100", top: "50%", left: "50%"
+    });
+
+    // Handle Touch for Game
+    heartBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        playAudio('clickSound');
+        endGame(true);
+    });
+    heartBtn.onclick = () => { playAudio('clickSound'); endGame(true); };
+
     document.body.appendChild(heartBtn);
 
     let timeLeft = 10;
@@ -444,9 +413,8 @@ function startGame() {
 
     function moveHeart() {
         if (!gameActive) return;
-        const padding = 60;
-        const maxX = window.innerWidth - padding;
-        const maxY = window.innerHeight - padding;
+        const maxX = window.innerWidth - 80;
+        const maxY = window.innerHeight - 80;
         heartBtn.style.left = Math.random() * maxX + "px";
         heartBtn.style.top = Math.random() * maxY + "px";
     }
@@ -457,30 +425,17 @@ function startGame() {
         clearInterval(moveInterval);
         heartBtn.remove();
         
-        const msg = document.createElement("h2");
-        msg.style.color = "pink";
-        if (won) {
-            msg.innerHTML = `You caught my heart in ${11 - timeLeft - 1} seconds! ❤️🥰`;
-        } else {
-            msg.innerHTML = "Time's up! But you still caught my heart ❤️🥰";
-        }
-        container.appendChild(msg);
+        container.innerHTML = won 
+            ? `<h2 style='color:pink;'>You Caught It! ❤️<br>I'm Yours!</h2>`
+            : `<h2 style='color:pink;'>Time's up! <br>But you still caught my heart ❤️</h2>`;
     }
 
-    heartBtn.onclick = () => {
-        if (!gameActive) return;
-        playAudio('clickSound');
-        endGame(true);
-    };
-
     moveHeart();
-    moveInterval = setInterval(moveHeart, 800);
+    moveInterval = setInterval(moveHeart, 700); // Slightly slower for mobile
     timerInterval = setInterval(() => {
         timeLeft--;
         timerDisplay.innerText = `Time: ${timeLeft}s`;
-        if (timeLeft <= 0) {
-            endGame(false);
-        }
+        if (timeLeft <= 0) endGame(false);
     }, 1000);
 }
 </script>
