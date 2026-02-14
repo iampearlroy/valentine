@@ -69,8 +69,14 @@
         font-family: 'Playfair Display', serif;
         font-size: 42px;
         background: linear-gradient(45deg, gold, #ff4da6);
-        -webkit-background-clip: text;
+        
+        /* --- FIXED SECTION BELOW --- */
+        background-clip: text;          /* Standard property */
+        -webkit-background-clip: text;  /* Vendor prefix for Safari/Chrome */
         -webkit-text-fill-color: transparent;
+        color: transparent;             /* Fallback for standard browsers */
+        /* --------------------------- */
+
         animation: fadeIn 2s ease-in-out;
         margin-bottom: 20px;
     }
