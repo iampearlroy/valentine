@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Forever & Always 💍</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+
+<style>
+    /* ================= CORE STYLES ================= */
+    body {
+        margin: 0;
+        overflow: hidden;
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(circle at 30% 20%, #2b001a, #000000 70%);
+        text-align: center;
+        color: white;
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+    }
+
+    /* ================= BACKGROUND EFFECTS ================= */
+    body::before {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(120deg, transparent, rgba(255,215,0,0.05), transparent);
+        animation: shimmer 14s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-50%) rotate(0deg); }
+        100% { transform: translateX(50%) rotate(360deg); }
+    }
+
+    @keyframes pulse {
+        0% { background: radial-gradient(circle at 30% 20%, #2b001a, #000000 70%); }
+        50% { background: radial-gradient(circle at 30% 20%, #3b002a, #111111 70%); }
+        100% { background: radial-gradient(circle at 30% 20%, #2b001a, #000000 70%); }
+    }
+
+    body:hover {
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    /* ================= UI LAYOUT ================= */
+    #ui-container {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .main-content-wrapper {
+        margin-top: -50px;
+    }
+
+    h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        background: linear-gradient(45deg, gold, #ff4da6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: fadeIn 2s ease-in-out;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 20px;
+        padding: 0 15px;
+        opacity: 0.9;
+        min-height: 60px;
+    }
+
+    /* ================= BUTTONS ================= */
+    button {
+        padding: 15px 35px;
+        font-size: 20px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        margin: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    button:hover::before {
+        left: 100%;
+    }
+
+    button:active {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(255,215,0,0.5);
+    }
+
+    .yes {
+        background: linear-gradient(45deg, gold, #ff4da6);
+        color: black;
+        font-weight: bold;
+        box-shadow: 0 0 20px gold;
+    }
+
+    .yes:hover {
+        box-shadow: 0 0 40px gold;
+    }
+
+    .no {
+        background: rgba(255,255,255,0.05);
+        color: pink;
+        border: 1px solid rgba(255,215,0,0.3);
+    }
+
+    .no:hover {
+        background: rgba(255,105,180,0.2);
+    }
+
+    /* ================= ANIMATIONS ================= */
+    .heart {
+        position: absolute;
+        color: gold;
+        animation: float 6s linear infinite;
+        z-index: 1;
+        opacity: 0.8;
+        filter: drop-shadow(0 0 5px gold);
+        pointer-events: none;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(100vh) rotate(0deg) scale(1); opacity: 0; }
+        10% { opacity: 0.8; }
+        90% { opacity: 0.8; }
+        100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+
+<!-- AUDIO FILES: Ensure these exist in a 'static' folder -->
+<audio id="bgMusic" autoplay loop preload="auto">
+    <source src="static/music.mp3" type="audio/mpeg">
+</audio>
+<audio id="clickSound" preload="auto">
+    <source src="static/click.mp3" type="audio/mpeg">
+</audio>
+<audio id="yesSound" preload="auto">
+    <source src="static/yes.mp3" type="audio/mpeg">
+</audio>
+
+<div id="ui-container">
+    
+    <!-- Loading Screen -->
+    <div id="loadingScreen" style="text-align: center; z-index: 10;">
+        <h1 style="color: gold; font-family: 'Playfair Display', serif;">Preparing something special...</h1>
+        <div style="width: 200px; height: 4px; background: rgba(255,255,255,0.2); margin: 20px auto; border-radius: 2px;">
+            <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(45deg, gold, #ff4da6); border-radius: 2px; transition: width 3s ease;"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content-wrapper" style="opacity: 0; display: none; transition: opacity 1s;">
+        <h1>Hey You Girl ❤️</h1>
+        <p id="loveText"></p>
+        <div>
+            <button class="yes" onclick="yesClicked()" id="yesBtn" aria-label="Say Yes">YES 💖</button>
+            <button class="no" onclick="moveNo(this)" id="noBtn" aria-label="Say No">NO 😜</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ================= CONFIGURATION ================= */
+const noComments = [
+    "Nice try 😜", "Still no? 🤨", "You sure? 😏", "Think again 💭", "Come onnn 🥺",
+    "Don't run 😆", "Caught you 😎", "Hehe nope 😂", "Still hiding? 👀", "You can't escape 😈",
+    "Try harder 💪", "Almost there 😅", "Nope again 😜", "Really? 🤔", "I see you 😏",
+    "Click YES 😌", "Stop running 🏃‍♀️", "Why so shy? 😊", "Be honest 😇", "You love me 😘",
+    "Not fair 😝", "Haha missed 😆", "Too slow 🐢", "Faster! ⚡", "Still trying? 😏",
+    "No again? 🤭", "Think twice 💕", "Admit it 😌", "Say yes already 😍", "Running again? 😂",
+    "I won't stop 😜", "You blush 😳", "It's destiny 💫", "Stop teasing 😏", "Come here 😁",
+    "Still playing? 🎮", "Haha 😆", "No no no 😜", "You clicked it 😏", "Give up? 😌",
+    "Nice tap 📱", "Android fast? 🤳", "Missed me 😆", "Tap tap 😂", "Why run? 😜",
+    "You can't win 😈", "Still saying no? 🤨", "Hmm suspicious 🤔", "Think carefully 💭", "Almost yes 😏",
+    "Be brave 😌", "Click YES 💖", "Not again 😆", "Still shy? 😊", "Stop moving 😜",
+    "I see that 👀", "You smiling 😁", "Haha try more 😂", "Close one 😅", "Try again 💪",
+    "Still resisting? 😏", "Nope nope 😜", "Tap faster ⚡", "Too cute 😍", "You love this 😆",
+    "Say it 😌", "Almost yes 💕", "No again 😂", "Persistent huh 😏", "Caught clicking 😜",
+    "Again?? 😆", "Still tapping 📱", "Why no? 😅", "Stop teasing 😈", "You can't escape 💘",
+    "Getting tired? 😜", "Still here 😏", "Haha cute 😂", "One more try 😌", "No works? 😆",
+    "Keep trying 💪", "Tap tap tap 📱", "Almost mine 💍", "Say YES 💖", "Not allowed 😜",
+    "You trying hard 😏", "Click YES now 😌", "Still no? 😂", "No means yes 😜", "Last chance 😆",
+    "Okay okay 😏", "Still resisting 💕", "Hehe 😜", "You're adorable 😍", "Just say YES 😌"
+];
+
+let noClickCount = 0;
+let musicPlayed = false;
+const loveMessage = "From the moment I met you, my world became brighter ✨ You are my happiness, my peace, my forever 💕";
+
+/* ================= MUSIC AUTOPLAY LOGIC ================= */
+window.addEventListener('load', function() {
+    const audio = document.getElementById('bgMusic');
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(_ => {
+            musicPlayed = true;
+            console.log("Autoplay successful");
+        }).catch(error => {
+            console.log("Autoplay blocked. Waiting for click.");
+            document.body.addEventListener('click', function() {
+                if(!musicPlayed) {
+                    audio.play();
+                    musicPlayed = true;
+                }
+            }, { once: true });
+        });
+    }
+});
+
+function playAudio(id) {
+    const audio = document.getElementById(id);
+    if (audio) {
+        if (id !== 'bgMusic') audio.currentTime = 0;
+        audio.play().catch(e => console.log(e));
+    }
+}
+
+function ensureMusic() {
+    if (!musicPlayed) {
+        playAudio('bgMusic');
+        musicPlayed = true;
+    }
+}
+
+/* ================= LOADING & TYPING ================= */
+setTimeout(() => {
+    document.getElementById('progressBar').style.width = '70%';
+    setTimeout(startTypewriter, 1000);
+}, 1000);
+
+function startTypewriter() {
+    const textElem = document.getElementById("loveText");
+    let i = 0;
+    
+    function type() {
+        if (i < loveMessage.length) {
+            textElem.innerHTML += loveMessage.charAt(i);
+            i++;
+            setTimeout(type, 50);
+        } else {
+            finishLoading();
+        }
+    }
+    type();
+}
+
+function finishLoading() {
+    const progressBar = document.getElementById('progressBar');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const mainContent = document.getElementById('mainContent');
+    
+    setTimeout(() => {
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            mainContent.style.display = 'block';
+            setTimeout(() => {
+                mainContent.style.opacity = '1';
+            }, 50);
+        }, 500);
+    }, 500);
+}
+
+/* ================= INTERACTION ================= */
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'y' || event.key === 'Y') {
+        const yesBtn = document.getElementById('yesBtn');
+        if (yesBtn && yesBtn.offsetParent !== null) yesClicked();
+    } else if (event.key === 'n' || event.key === 'N') {
+        const noBtn = document.getElementById('noBtn');
+        if (noBtn && noBtn.offsetParent !== null) moveNo(noBtn);
+    }
+});
+
+function moveNo(btn) {
+    playAudio('clickSound');
+    ensureMusic();
+    
+    if (navigator.vibrate) {
+        let level = Math.min(noClickCount + 1, 10);
+        navigator.vibrate([level * 50, 40, level * 50]);
+    }
+
+    if (noClickCount < noComments.length) {
+        alert(noComments[noClickCount]);
+    } else {
+        alert("You really love clicking NO 😜");
+    }
+    noClickCount++;
+
+    btn.style.position = "fixed";
+    const padding = 20;
+    const maxX = window.innerWidth - btn.offsetWidth - padding;
+    const maxY = window.innerHeight - btn.offsetHeight - padding;
+    
+    btn.style.left = Math.max(padding, Math.random() * maxX) + "px";
+    btn.style.top = Math.max(padding, Math.random() * maxY) + "px";
+}
+
+function yesClicked() {
+    playAudio('clickSound');
+    playAudio('yesSound');
+    ensureMusic();
+
+    if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200, 100, 400]);
+    }
+
+    const uiContainer = document.getElementById('ui-container');
+    uiContainer.innerHTML = `
+        <h1 style='color:gold; font-family:Playfair Display;'>She Said YES 💍💖</h1>
+        <h2 style='color:pink;'>You Are Mine Forever 🥰</h2>
+    `;
+
+    launchConfetti();
+    setTimeout(startGame, 1500);
+}
+
+/* ================= EFFECTS ================= */
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 20 + "px";
+    heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+}
+setInterval(createHeart, 300);
+
+function launchConfetti() {
+    const canvas = document.createElement("canvas");
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = "5";
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+    const pieces = Array.from({length: 250}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        size: Math.random() * 8 + 4,
+        speed: Math.random() * 4 + 2,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`
+    }));
+
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.y += p.speed;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        if (document.body.contains(canvas)) requestAnimationFrame(update);
+    }
+
+    update();
+    setTimeout(() => canvas.remove(), 5000);
+}
+
+/* ================= GAME ================= */
+function startGame() {
+    const container = document.getElementById('ui-container');
+    
+    const gameTitle = document.createElement("h2");
+    gameTitle.innerText = "Catch My Heart 💘 - You have 10 seconds!";
+    gameTitle.style.color = "gold";
+    container.appendChild(gameTitle);
+
+    const timerDisplay = document.createElement("div");
+    timerDisplay.style.color = "pink";
+    timerDisplay.style.fontSize = "24px";
+    timerDisplay.style.margin = "10px";
+    timerDisplay.innerText = "Time: 10s";
+    container.appendChild(timerDisplay);
+
+    const heartBtn = document.createElement("button");
+    heartBtn.innerHTML = "💖";
+    heartBtn.style.position = "fixed";
+    heartBtn.style.fontSize = "30px";
+    heartBtn.style.padding = "15px";
+    heartBtn.style.borderRadius = "50%";
+    heartBtn.style.border = "none";
+    heartBtn.style.cursor = "pointer";
+    heartBtn.style.background = "linear-gradient(45deg,gold,#ff4da6)";
+    heartBtn.style.boxShadow = "0 0 20px gold";
+    heartBtn.style.zIndex = "100";
+    document.body.appendChild(heartBtn);
+
+    let timeLeft = 10;
+    let gameActive = true;
+    let moveInterval, timerInterval;
+
+    function moveHeart() {
+        if (!gameActive) return;
+        const padding = 60;
+        const maxX = window.innerWidth - padding;
+        const maxY = window.innerHeight - padding;
+        heartBtn.style.left = Math.random() * maxX + "px";
+        heartBtn.style.top = Math.random() * maxY + "px";
+    }
+
+    function endGame(won) {
+        gameActive = false;
+        clearInterval(timerInterval);
+        clearInterval(moveInterval);
+        heartBtn.remove();
+        
+        const msg = document.createElement("h2");
+        msg.style.color = "pink";
+        if (won) {
+            msg.innerHTML = `You caught my heart in ${11 - timeLeft - 1} seconds! ❤️🥰`;
+        } else {
+            msg.innerHTML = "Time's up! But you still caught my heart ❤️🥰";
+        }
+        container.appendChild(msg);
+    }
+
+    heartBtn.onclick = () => {
+        if (!gameActive) return;
+        playAudio('clickSound');
+        endGame(true);
+    };
+
+    moveHeart();
+    moveInterval = setInterval(moveHeart, 800);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = `Time: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+            endGame(false);
+        }
+    }, 1000);
+}
+</script>
+</body>
+</html>
